@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "77431993940",
+    "project_id": "flashgo-7b01c",
+    "storage_bucket": "flashgo-7b01c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77431993940:android:9bd149a5a4dd66f84a9fc1",
+        "android_client_info": {
+          "package_name": "com.example.flash_go"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRkBb1x-jmUMx0pkevQwg9MwYwDpN_ABU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

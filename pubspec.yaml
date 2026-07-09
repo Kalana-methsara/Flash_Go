@@ -1,0 +1,43 @@
+name: flash_go
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Flutter environment එක ශක්තිමත් මට්ටමක තැබීම
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # 🔥 Firebase Packages (Versions එකිනෙකට ගැළපෙන සේ සකසා ඇත)
+  firebase_core: ^3.15.2
+  firebase_database: ^11.1.2
+  
+  # 🛠️ State & Core Utilities
+  provider: ^6.1.2
+  cupertino_icons: ^1.0.8
+
+  # 🗺️ Location & Maps
+  google_maps_flutter: ^2.6.0
+  geolocator: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^3.0.0 # dev_dependencies ඇතුළට නිවැරදිව ගෙන යන ලදී
+
+# 🎨 Launcher Icon Configuration
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+
+flutter:
+  uses-material-design: true
+
+  # 📂 Assets පාවිච්චි කරනවා නම් (උදා: icons, images) මේ කොටස uncomment කරලා ගන්න පුළුවන්
+  # assets:
+  #   - assets/icon/app_icon.png
