@@ -3,13 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'theme_provider.dart';
-import 'screens/login_page.dart';
+import 'screens/login_page.dart'; 
 
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
 
-  
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
@@ -30,7 +28,6 @@ class CampRunnerApp extends StatelessWidget {
     return MaterialApp(
       title: 'CampRunner',
       debugShowCheckedModeBanner: false,
-      
       
       themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       darkTheme: ThemeData(
@@ -53,7 +50,7 @@ class CampRunnerApp extends StatelessWidget {
   }
 }
 
-
+// අවශ්‍ය නම් පමණක් පාවිච්චි කිරීමට තබා ගත් පේජ් එක
 class TempWelcomePage extends StatelessWidget {
   const TempWelcomePage({super.key});
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'create_order_screen.dart';
 import 'campus_pool_screen.dart';
+import 'profile_screen.dart'; 
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -12,10 +13,11 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   int _selectedIndex = 0;
 
-  // මාරු වෙන්න අවශ්‍ය පේජ් ලයිස්තුව
+  // Screens List
   final List<Widget> _screens = [
     const CreateOrderScreen(),
     const CampusPoolScreen(),
+    const ProfileScreen(), 
   ];
 
   void _onItemTapped(int index) {
@@ -37,6 +39,7 @@ class _MainDashboardState extends State<MainDashboard> {
         selectedItemColor: Colors.amber,
         unselectedItemColor: Colors.grey,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        type: BottomNavigationBarType.fixed, 
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.add_shopping_cart_rounded),
@@ -45,6 +48,10 @@ class _MainDashboardState extends State<MainDashboard> {
           BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department_rounded),
             label: 'Campus Pool',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline_rounded),
+            label: 'Profile',
           ),
         ],
       ),

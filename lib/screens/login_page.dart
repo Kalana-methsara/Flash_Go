@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'main_dashboard.dart'; // 💡 CreateOrderScreen වෙනුවට MainDashboard එක import කළා
+import 'main_dashboard.dart'; // 💡 MainDashboard එක import කර ඇත
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -48,14 +48,23 @@ class _LoginPageState extends State<LoginPage> {
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'වැරදීමක් සිදුවුණා. නැවත උත්සාහ කරන්න.';
-        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        
+        // 💡 Firebase Auth නවතම අප්ඩේට් එකට අනුව 'invalid-credential' කේතයද එකතු කළා
+        if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
           errorMessage = 'ඇතුළත් කළ Email හෝ Password එක වැරදියි.';
         } else if (e.code == 'invalid-email') {
           errorMessage = 'ඇතුළත් කළ Email රටාව වැරදියි.';
+        } else if (e.code == 'user-disabled') {
+          errorMessage = 'මෙම ගිණුම තාවකාලිකව අත්හිටුවා ඇත.';
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text(errorMessage, style: const TextStyle(fontWeight: FontWeight.w500)), 
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating, // ලස්සනට පාවෙලා එන විදිහට හැදුවා
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
         );
       } finally {
         if (mounted) {
@@ -140,6 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                             backgroundColor: Colors.amber,
                             foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            elevation: 2,
                           ),
                           child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
@@ -156,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: const Text(
                     "ගිණුමක් නැද්ද? Register වෙන්න මෙතනින්",
-                    style: TextStyle(color: Colors.amber),
+                    style: TextStyle(color: Colors.amber, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],

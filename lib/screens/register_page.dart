@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'create_order_screen.dart'; 
+import 'main_dashboard.dart'; 
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -63,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const CreateOrderScreen()),
+            MaterialPageRoute(builder: (context) => const MainDashboard()),
           );
         }
 
@@ -140,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     prefixIcon: const Icon(Icons.phone_outlined),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  validator: (value) => value!.isEmpty ? 'Phone ნომරය ඇතුළත් කරන්න' : null,
+                  validator: (value) => value!.isEmpty ? 'Phone නොමරය ඇතුළත් කරන්න' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -164,15 +164,17 @@ class _RegisterPageState extends State<RegisterPage> {
                 
                 _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Colors.amber))
-                    : ElevatedButton(
-                        onPressed: _register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    : SizedBox(
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: _register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Sign Up', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
-                        child: const Text('Sign Up', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
               ],
             ),
