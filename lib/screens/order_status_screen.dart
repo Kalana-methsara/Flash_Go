@@ -1,0 +1,145 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class OrderStatusScreen extends StatelessWidget {
+  final String orderId;
+  const OrderStatusScreen({super.key, required this.orderId});
+
+  Future<void> _updateStatus(BuildContext context, String currentStatus) async {
+    String nextStatus = currentStatus;
+    if (currentStatus == 'ACCEPTED') nextStatus = 'PICKED_UP';
+    if (currentStatus == 'PICKED_UP') nextStatus = 'DELIVERED';
+
+    try {
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+        'status': nextStatus,
+      });
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Order Tracking')),
+      body: StreamBuilder<DocumentSnapshot>(
+        // Backend Real-time Stream: මේ නිශ්චිත ඕඩර් එකේ විස්තර විතරක් live ෆෙච් කිරීම
+        stream: FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: CircularProgressIndicator(color: Colors.amber));
+          }
+          
+          final order = snapshot.data!;
+          String status = order['status'];
+          bool isRunner = order['runnerId'] == currentUserId;
+
+          // Stepper එකට අදාළ index එක හැදීම
+          int currentStep = 0;
+          if (status == 'ACCEPTED') currentStep = 1;
+          if (status == 'PICKED_UP') currentStep = 2;
+          if (status == 'DELIVERED') currentStep = 3;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Order Details Card
+                Card(
+                  color: Colors.amber.withOpacity(0.1),
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.shopping_bag_outlined, color: Colors.amber, size: 40),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(order['title'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text('Status: $status', style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.amber)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                // Live Status Steps UI
+                Expanded(
+                  child: Stepper(
+                    currentStep: currentStep,
+                    controlsBuilder: (context, controls) => const SizedBox(), // Default බටන්ස් අයින් කිරීමට
+                    steps: [
+                      Step(
+                        title: const Text('Order Placed'),
+                        subtitle: const Text('ඇණවුම සාර්ථකව යොමු කර ඇත'),
+                        isActive: currentStep >= 0,
+                        state: currentStep > 0 ? StepState.complete : StepState.editing,
+                        content: const SizedBox(),
+                      ),
+                      Step(
+                        title: const Text('Runner Accepted'),
+                        subtitle: const Text('යාළුවෙක් ඕඩර් එක බාරගත්තා'),
+                        isActive: currentStep >= 1,
+                        state: currentStep > 1 ? StepState.complete : (currentStep == 1 ? StepState.editing : StepState.indexed),
+                        content: const SizedBox(),
+                      ),
+                      Step(
+                        title: const Text('Picked Up'),
+                        subtitle: const Text('Runner බඩු රැගෙන එමින් පවතී'),
+                        isActive: currentStep >= 2,
+                        state: currentStep > 2 ? StepState.complete : (currentStep == 2 ? StepState.editing : StepState.indexed),
+                        content: const SizedBox(),
+                      ),
+                      Step(
+                        title: const Text('Delivered'),
+                        subtitle: const Text('ඇණවුම ඔබට ලැබී ඇත. ස්තූතියි! 🎉'),
+                        isActive: currentStep >= 3,
+                        state: currentStep == 3 ? StepState.complete : StepState.indexed,
+                        content: const SizedBox(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Runner ට විතරක් පේන Action Button එක (Status මාරු කරන්න)
+                if (isRunner && status != 'DELIVERED')
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: () => _updateStatus(context, status),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        status == 'ACCEPTED' ? 'I Picked Up the Item 🛍️' : 'Mark as Delivered ✅',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

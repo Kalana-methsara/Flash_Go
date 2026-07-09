@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'create_order_screen.dart'; 
+import 'main_dashboard.dart'; // 💡 CreateOrderScreen වෙනුවට MainDashboard එක import කළා
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  
+  // Firebase Login Logic
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -33,25 +33,23 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        
+        // Firebase එකෙන් login වීම පරීක්ෂා කිරීම
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        
+        // 💡 සාර්ථක නම් කෙලින්ම Bottom Navigation Bar එක තියෙන Main Dashboard එකට රැගෙන යාම
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const CreateOrderScreen()),
+            MaterialPageRoute(builder: (context) => const MainDashboard()),
           );
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'වැරදීමක් සිදුවුණා. නැවත උත්සාහ කරන්න.';
-        if (e.code == 'user-not-found') {
-          errorMessage = 'මේ Email එකෙන් ගිණුමක් සොයාගත නොහැක.';
-        } else if (e.code == 'wrong-password') {
-          errorMessage = 'ඇතුළත් කළ මුරපදය (Password) වැරදියි.';
+        if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+          errorMessage = 'ඇතුළත් කළ Email හෝ Password එක වැරදියි.';
         } else if (e.code == 'invalid-email') {
           errorMessage = 'ඇතුළත් කළ Email රටාව වැරදියි.';
         }
@@ -81,11 +79,11 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                
+                // App Logo Icon
                 const Icon(Icons.flash_on, size: 80, color: Colors.amber),
                 const SizedBox(height: 10),
                 
-                
+                // App Title
                 Text(
                   'CampRunner',
                   textAlign: TextAlign.center,
@@ -101,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
 
-                
+                // Email Field
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -114,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
 
-                
+                // Password Field
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscureText,
@@ -131,35 +129,36 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                
+                // Login Button
                 _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Colors.amber))
                     : SizedBox(
                         height: 55,
                         child: ElevatedButton(
-                        onPressed: _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
-                        child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
-                      ),
-                      const SizedBox(height: 16),
-TextButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const RegisterPage()),
-    );
-  },
-  child: const Text(
-    "ගිණුමක් නැද්ද? Register වෙන්න මෙතනින්",
-    style: TextStyle(color: Colors.amber),
-  ),
-),
+                const SizedBox(height: 16),
+                
+                // Go to Register Page Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegisterPage()),
+                    );
+                  },
+                  child: const Text(
+                    "ගිණුමක් නැද්ද? Register වෙන්න මෙතනින්",
+                    style: TextStyle(color: Colors.amber),
+                  ),
+                ),
               ],
             ),
           ),
