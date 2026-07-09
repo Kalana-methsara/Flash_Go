@@ -13,7 +13,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   
-  // Controllers
+  
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -31,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  // Firebase Auth + Firestore Registration Logic
+  
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
       });
 
       try {
-        // 1. Firebase Auth එකේ User කෙනෙක් ක්‍රියේට් කිරීම
+        
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -48,18 +48,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
         String uid = userCredential.user!.uid;
 
-        // 2. ශිෂ්‍යයාගේ අමතර විස්තර ටික Firestore Database එකට සේව් කිරීම
+        
         await FirebaseFirestore.instance.collection('users').doc(uid).set({
           'userId': uid,
           'name': _nameController.text.trim(),
           'email': _emailController.text.trim(),
           'phone': _phoneController.text.trim(),
-          'rating': 5.0, // අලුත් යූසර් කෙනෙක් නිසා default rating එක 5.0 දෙනවා
+          'rating': 5.0, 
           'isAvailableAsRunner': true,
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // ලියාපදිංචිය සාර්ථක නම් හෝම් ස්ක්‍රීන් එකට යැවීම
+        
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -106,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 const Icon(Icons.person_add_alt_1_rounded, size: 70, color: Colors.amber),
                 const SizedBox(height: 24),
 
-                // Name Field
+                
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -118,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Email Field
+                
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -131,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Phone Field
+                
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
@@ -144,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Field
+                
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscureText,
@@ -161,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Register Button
+                
                 _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Colors.amber))
                     : ElevatedButton(

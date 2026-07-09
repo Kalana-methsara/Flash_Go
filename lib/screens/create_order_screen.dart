@@ -10,7 +10,7 @@ class CreateOrderScreen extends StatefulWidget {
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   
-  // Controllers to get data from text fields
+  
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   final _pickupController = TextEditingController();
@@ -29,7 +29,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   void _submitOrder() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Firebase Backend එකට ඩේටා යවන කොටස මීළඟට මෙතනට එනවා.
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Order එක Pool එකට එකතු වෙනවා... 🚀'),
@@ -53,7 +53,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Card
+              
               Card(
                 color: Colors.amber.withOpacity(0.15),
                 elevation: 0,
@@ -76,7 +76,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Title Field
+              
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
@@ -89,7 +89,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description Field
+              
               TextFormField(
                 controller: _descController,
                 maxLines: 3,
@@ -103,7 +103,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Pickup Location Field
+              
               TextFormField(
                 controller: _pickupController,
                 decoration: InputDecoration(
@@ -116,7 +116,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Drop Location Field
+              
               TextFormField(
                 controller: _dropController,
                 decoration: InputDecoration(
@@ -129,7 +129,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Tip Field
+              
               TextFormField(
                 controller: _tipController,
                 keyboardType: TextInputType.number,
@@ -147,7 +147,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Submit Button
+              
               SizedBox(
                 width: double.infinity,
                 height: 55,

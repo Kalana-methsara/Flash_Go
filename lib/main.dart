@@ -48,9 +48,6 @@ class CampRunnerApp extends StatelessWidget {
         ),
       ),
       
-      
-      // උඩින් import එක තියෙනවාද බලන්න: import 'login_page.dart';
-
       home: const LoginPage(),
     );
   }

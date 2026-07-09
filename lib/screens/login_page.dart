@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Firebase Login Logic
+  
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -33,13 +33,13 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        // Firebase එකෙන් login වීම පරීක්ෂා කිරීම
+        
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // සාර්ථක නම් Create Order Screen එකට රැගෙන යාම
+        
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -81,11 +81,11 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // App Logo Icon
+                
                 const Icon(Icons.flash_on, size: 80, color: Colors.amber),
                 const SizedBox(height: 10),
                 
-                // App Title
+                
                 Text(
                   'CampRunner',
                   textAlign: TextAlign.center,
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Email Field
+                
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Field
+                
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscureText,
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Login Button
+                
                 _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Colors.amber))
                     : SizedBox(
