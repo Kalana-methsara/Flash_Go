@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'chat_screen.dart'; // 💡 අලුතින් සාදපු Chat Screen එක Import කළා
 
 class OrderStatusScreen extends StatelessWidget {
   final String orderId;
@@ -14,22 +15,38 @@ class OrderStatusScreen extends StatelessWidget {
     try {
       await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
         'status': nextStatus,
-      });
+        });
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
-    }
-  }
+           if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+             }
+             }
+              }
 
   @override
   Widget build(BuildContext context) {
     String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Order Tracking')),
+      appBar: AppBar(
+        title: const Text('Order Tracking'),
+        actions: [
+          // 💡 AppBar එකට Real-time Chat එකට යන්න සුපිරි Action Button එකක් එකතු කළා
+          IconButton(
+            icon: const Icon(Icons.chat_bubble_rounded, color: Colors.amber, size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(orderId: orderId),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
       body: StreamBuilder<DocumentSnapshot>(
-        // Backend Real-time Stream: මේ නිශ්චිත ඕඩර් එකේ විස්තර විතරක් live ෆෙච් කිරීම
         stream: FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -38,12 +55,15 @@ class OrderStatusScreen extends StatelessWidget {
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(child: CircularProgressIndicator(color: Colors.amber));
           }
-          
-          final order = snapshot.data!;
-          String status = order['status'];
-          bool isRunner = order['runnerId'] == currentUserId;
 
-          // Stepper එකට අදාළ index එක හැදීම
+          var order = snapshot.data!.data() as Map<String, dynamic>;
+          String status = order['status'] ?? 'PENDING';
+          String title = order['title'] ?? 'Errand';
+          String customerId = order['customerId'] ?? '';
+          String runnerId = order['runnerId'] ?? '';
+
+          bool isRunner = currentUserId == runnerId;
+
           int currentStep = 0;
           if (status == 'ACCEPTED') currentStep = 1;
           if (status == 'PICKED_UP') currentStep = 2;
@@ -52,56 +72,36 @@ class OrderStatusScreen extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Order Details Card
-                Card(
-                  color: Colors.amber.withOpacity(0.1),
-                  elevation: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.shopping_bag_outlined, color: Colors.amber, size: 40),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(order['title'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
-                              Text('Status: $status', style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.amber)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
+                Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text('Status: $status', style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
 
-                // Live Status Steps UI
                 Expanded(
                   child: Stepper(
                     currentStep: currentStep,
-                    controlsBuilder: (context, controls) => const SizedBox(), // Default බටන්ස් අයින් කිරීමට
+                    physics: const ClampingScrollPhysics(),
+                    controlsBuilder: (context, details) => const SizedBox(),
                     steps: [
                       Step(
                         title: const Text('Order Placed'),
-                        subtitle: const Text('ඇණවුම සාර්ථකව යොමු කර ඇත'),
+                        subtitle: const Text('ඇණවුම සාර්ථකව පෝස්ට් කර ඇත.'),
                         isActive: currentStep >= 0,
                         state: currentStep > 0 ? StepState.complete : StepState.editing,
                         content: const SizedBox(),
                       ),
                       Step(
-                        title: const Text('Runner Accepted'),
-                        subtitle: const Text('යාළුවෙක් ඕඩර් එක බාරගත්තා'),
+                        title: const Text('Accepted'),
+                        subtitle: const Text('Runner කෙනෙක් ඇණවුම බාරගෙන ඇත.'),
                         isActive: currentStep >= 1,
                         state: currentStep > 1 ? StepState.complete : (currentStep == 1 ? StepState.editing : StepState.indexed),
                         content: const SizedBox(),
                       ),
                       Step(
                         title: const Text('Picked Up'),
-                        subtitle: const Text('Runner බඩු රැගෙන එමින් පවතී'),
+                        subtitle: const Text('Runner භාණ්ඩය රැගෙන එමින් පවතී.'),
                         isActive: currentStep >= 2,
                         state: currentStep > 2 ? StepState.complete : (currentStep == 2 ? StepState.editing : StepState.indexed),
                         content: const SizedBox(),
@@ -117,7 +117,6 @@ class OrderStatusScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Runner ට විතරක් පේන Action Button එක (Status මාරු කරන්න)
                 if (isRunner && status != 'DELIVERED')
                   SizedBox(
                     width: double.infinity,
