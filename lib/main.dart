@@ -3,8 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'theme_provider.dart';
-
-import '/login_page.dart'; 
+import 'screens/login_page.dart';
 
 void main() async {
   
@@ -50,7 +49,9 @@ class CampRunnerApp extends StatelessWidget {
       ),
       
       
-      home: const TempWelcomePage(),
+      // උඩින් import එක තියෙනවාද බලන්න: import 'login_page.dart';
+
+      home: const LoginPage(),
     );
   }
 }
@@ -78,7 +79,7 @@ class TempWelcomePage extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Campus Micro-Delivery & Errand Network එක සාර්ථකව පූට් වුණා. 🚀',
+                'Campus Micro-Delivery & Errand Network',
                 textAlign: TextAlign.center,
               ),
             ),
