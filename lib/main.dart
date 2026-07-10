@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'theme_provider.dart';
-import 'screens/login_page.dart'; 
+import 'services/notification_service.dart'; // 💡 අලුතින් එකතු කළ import එක
+import 'screens/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 💡 Background handler එක Firebase.initializeApp() එකට පස්සේම, 
+  // runApp() එකට කලින් register කරන්න ඕන (Flutter engine එකට separate isolate එකෙන් call වෙන්නේ)
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // 💡 Notification service එක initialize කිරීම - permission/permission issues වලින් app crash නොවෙන්න
+  try {
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('⚠️ Notification initialization failed: $e');
+  }
 
   runApp(
     ChangeNotifierProvider(
@@ -46,40 +59,6 @@ class CampRunnerApp extends StatelessWidget {
       ),
       
       home: const LoginPage(),
-    );
-  }
-}
-
-// අවශ්‍ය නම් පමණක් පාවිච්චි කිරීමට තබා ගත් පේජ් එක
-class TempWelcomePage extends StatelessWidget {
-  const TempWelcomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.delivery_dining, size: 80, color: Colors.amber),
-            const SizedBox(height: 16),
-            Text(
-              'Welcome to CampRunner!',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Campus Micro-Delivery & Errand Network',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

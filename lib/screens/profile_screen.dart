@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import '../services/notification_service.dart'; // 💡 එකතු කළා
 import 'login_page.dart';
-import '../theme_provider.dart'; // 💡 path එක ඔයාගේ project structure එකට match කරන්න - profile_screen.dart, screens/ folder එකේ නම් මේක හරි
+import '../theme_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,9 +14,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // 💡 _isDarkModeLocal local variable එක අයින් කළා - ThemeProvider එකෙන්ම state එක ගන්නවා
-
   Future<void> _logout(BuildContext context) async {
+    // 💡 logout කරන්න කලින් token එක clear කරනවා - 
+    // නැත්තම් device එක අනිත් කෙනෙක් පාවිච්චි කරද්දී පරණ user ට notification යනවා
+    await NotificationService.instance.clearToken();
     await FirebaseAuth.instance.signOut();
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(
@@ -110,11 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: const Text('Dark Theme Mode', style: TextStyle(fontWeight: FontWeight.w500)),
                           secondary: const Icon(Icons.dark_mode_outlined, color: Colors.amber),
                           activeColor: Colors.amber,
-                          // 💡 real ThemeProvider state එකෙන් value එක ගන්නවා
                           value: themeProvider.isDarkMode,
                           onChanged: (bool value) {
-                            // 💡 setState වෙනුවට ThemeProvider.toggleTheme() call කරනවා
-                            // මේකෙන් whole app එකේම theme එක update වෙනවා (notifyListeners() හරහා)
                             themeProvider.toggleTheme();
                           },
                         ),
