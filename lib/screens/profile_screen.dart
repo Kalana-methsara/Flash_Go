@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'login_page.dart'; 
+import 'package:provider/provider.dart';
+import 'login_page.dart';
+import '../theme_provider.dart'; // 💡 path එක ඔයාගේ project structure එකට match කරන්න - profile_screen.dart, screens/ folder එකේ නම් මේක හරි
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,7 +13,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isDarkModeLocal = false; 
+  // 💡 _isDarkModeLocal local variable එක අයින් කළා - ThemeProvider එකෙන්ම state එක ගන්නවා
 
   Future<void> _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -26,6 +28,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    // 💡 ThemeProvider එක listen කරනවා - මේකෙන් real dark mode state එක ලැබෙනවා
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -105,11 +110,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: const Text('Dark Theme Mode', style: TextStyle(fontWeight: FontWeight.w500)),
                           secondary: const Icon(Icons.dark_mode_outlined, color: Colors.amber),
                           activeColor: Colors.amber,
-                          value: _isDarkModeLocal,
+                          // 💡 real ThemeProvider state එකෙන් value එක ගන්නවා
+                          value: themeProvider.isDarkMode,
                           onChanged: (bool value) {
-                            setState(() {
-                              _isDarkModeLocal = value;
-                            });
+                            // 💡 setState වෙනුවට ThemeProvider.toggleTheme() call කරනවා
+                            // මේකෙන් whole app එකේම theme එක update වෙනවා (notifyListeners() හරහා)
+                            themeProvider.toggleTheme();
                           },
                         ),
                       ),

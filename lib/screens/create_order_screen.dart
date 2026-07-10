@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // 💡 Backend එකට අවශ්‍යයි
-import 'package:firebase_auth/firebase_auth.dart';       // 💡 Backend එකට අවශ්‍යයි
-import 'order_status_screen.dart';                       // 💡 Navigation එකට අවශ්‍යයි
+import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';       
+import 'order_status_screen.dart';                       
 
 class CreateOrderScreen extends StatefulWidget {
   const CreateOrderScreen({super.key});
@@ -13,14 +13,14 @@ class CreateOrderScreen extends StatefulWidget {
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   
-  // Controllers to get data from text fields
+  
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   final _pickupController = TextEditingController();
   final _dropController = TextEditingController();
   final _tipController = TextEditingController();
 
-  bool _isLoading = false; // 💡 Loading state එක පෙන්වීමට
+  bool _isLoading = false; 
 
   @override
   void dispose() {
@@ -32,29 +32,29 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     super.dispose();
   }
 
-  // 🚀 Backend + Navigation එකතු කළ සම්පූර්ණ Method එක
+  
   Future<void> _submitOrder() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Loading එක පටන් ගන්නවා
+        _isLoading = true; 
       });
 
       try {
-        // 1. දැනට ලොග් වෙලා ඉන්න ශිෂ්‍යයාගේ User ID (UID) එක ගැනීම
+        
         String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
 
         if (currentUserUid == null) {
           throw Exception("කරුණාකර ප්‍රථමයෙන් ලොග් වන්න.");
         }
 
-        // 2. Firestore එකේ අලුත් Document reference එකක් හැදීම (ID එක auto-generate වෙන්න)
+        
         DocumentReference orderRef = FirebaseFirestore.instance.collection('orders').doc();
 
-        // 3. ඩේටා ටික Map එකකට දමා Firestore එකට සේව් කිරීම
+        
         await orderRef.set({
           'orderId': orderRef.id,
           'requesterId': currentUserUid,
-          'runnerId': null, // තවම මේ order එක කවුරුත් බාරගෙන නැති නිසා null
+          'runnerId': null, 
           'title': _titleController.text.trim(),
           'description': _descController.text.trim(),
           'pickupLocation': {
@@ -68,11 +68,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             'longitude': 0.0,
           },
           'tipAmount': double.parse(_tipController.text.trim()),
-          'status': 'PENDING', // මුලින්ම order එකක් දාද්දී තත්ත්වය PENDING වේ
-          'createdAt': FieldValue.serverTimestamp(), // Server වෙලාව
+          'status': 'PENDING', 
+          'createdAt': FieldValue.serverTimestamp(), 
         });
 
-        // සාර්ථකව සේව් වුණාම Form එක clear කිරීම
+        
         _titleController.clear();
         _descController.clear();
         _pickupController.clear();
@@ -87,7 +87,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             ),
           );
 
-          // 💡 සාර්ථක වුණාට පස්සේ කෙලින්ම Tracking Screen එකට රැගෙන යාම
+          
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -107,7 +107,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       } finally {
         if (mounted) {
           setState(() {
-            _isLoading = false; // Loading එක නතර කරනවා
+            _isLoading = false; 
           });
         }
       }
@@ -128,7 +128,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Card
+              
               Card(
                 color: Colors.amber.withOpacity(0.15),
                 elevation: 0,
@@ -151,7 +151,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Title Field
+              
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
@@ -164,7 +164,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description Field
+              
               TextFormField(
                 controller: _descController,
                 maxLines: 3,
@@ -178,7 +178,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Pickup Location Field
+              
               TextFormField(
                 controller: _pickupController,
                 decoration: InputDecoration(
@@ -191,7 +191,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Drop Location Field
+              
               TextFormField(
                 controller: _dropController,
                 decoration: InputDecoration(
@@ -204,7 +204,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Tip Field
+              
               TextFormField(
                 controller: _tipController,
                 keyboardType: TextInputType.number,
@@ -222,7 +222,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 30),
 
-              // Submit Button
+              
               SizedBox(
                 width: double.infinity,
                 height: 55,
