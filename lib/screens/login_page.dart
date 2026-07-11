@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                 
                 // App Title
                 Text(
-                  'CampRunner',
+                  'Flash Go',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,

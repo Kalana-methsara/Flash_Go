@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'create_order_screen.dart';
 import 'campus_pool_screen.dart';
 import 'profile_screen.dart'; 
-import 'active_orders_screen.dart'; // 💡 අලුතින් හදපු file එක import කරන්න
+import 'active_orders_screen.dart'; 
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -14,11 +14,11 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   int _selectedIndex = 0;
 
-  // Screens List එකට ActiveOrdersScreen එක එකතු කරා
+  
   final List<Widget> _screens = [
     const CreateOrderScreen(),
     const CampusPoolScreen(),
-    const ActiveOrdersScreen(), // 💡 මෙතනට එකතු කළා
+    const ActiveOrdersScreen(), 
     const ProfileScreen(), 
   ];
 
@@ -51,9 +51,9 @@ class _MainDashboardState extends State<MainDashboard> {
             icon: Icon(Icons.local_fire_department_rounded),
             label: 'Campus Pool',
           ),
-          // 💡 අලුත් Navigation Item එක
+          
           BottomNavigationBarItem(
-            icon: Icon(Icons.moped_rounded), // tracking වලට ගැලපෙන icon එකක්
+            icon: Icon(Icons.moped_rounded), 
             label: 'Tracking',
           ),
           BottomNavigationBarItem(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import '../services/notification_service.dart'; // 💡 එකතු කළා
+import '../services/notification_service.dart'; 
 import 'login_page.dart';
 import '../theme_provider.dart';
 
@@ -15,8 +15,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout(BuildContext context) async {
-    // 💡 logout කරන්න කලින් token එක clear කරනවා - 
-    // නැත්තම් device එක අනිත් කෙනෙක් පාවිච්චි කරද්දී පරණ user ට notification යනවා
+    
     await NotificationService.instance.clearToken();
     await FirebaseAuth.instance.signOut();
     if (context.mounted) {
@@ -31,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-    // 💡 ThemeProvider එක listen කරනවා - මේකෙන් real dark mode state එක ලැබෙනවා
+    
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(

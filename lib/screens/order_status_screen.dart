@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'chat_screen.dart'; // 💡 අලුතින් සාදපු Chat Screen එක Import කළා
+import 'chat_screen.dart'; 
 
 class OrderStatusScreen extends StatelessWidget {
   final String orderId;
@@ -31,7 +31,7 @@ class OrderStatusScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Order Tracking'),
         actions: [
-          // 💡 AppBar එකට Real-time Chat එකට යන්න සුපිරි Action Button එකක් එකතු කළා
+          
           IconButton(
             icon: const Icon(Icons.chat_bubble_rounded, color: Colors.amber, size: 28),
             onPressed: () {

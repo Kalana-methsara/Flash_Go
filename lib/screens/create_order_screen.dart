@@ -209,7 +209,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 controller: _tipController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Runner ට දෙන ගාස්තුව (Tip Amount - LKR)',
+                  labelText: 'Runner ට දෙන ගාස්තුව (Tip Amount)',
                   hintText: 'e.g., 150',
                   prefixIcon: const Icon(Icons.monetization_on, color: Colors.amber),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
