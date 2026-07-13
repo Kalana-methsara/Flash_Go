@@ -130,7 +130,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             children: [
               
               Card(
-                color: Colors.amber.withOpacity(0.15),
+                color: Colors.amber.withValues(alpha: 0.15),
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: const Padding(

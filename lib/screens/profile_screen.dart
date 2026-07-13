@@ -67,7 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 10),
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: Colors.amber.withOpacity(0.2),
+                        backgroundColor: Colors.amber.withValues(alpha: 0.2),
                         child: const Icon(Icons.person_rounded, size: 60, color: Colors.amber),
                       ),
                       const SizedBox(height: 16),
@@ -110,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: SwitchListTile(
                           title: const Text('Dark Theme Mode', style: TextStyle(fontWeight: FontWeight.w500)),
                           secondary: const Icon(Icons.dark_mode_outlined, color: Colors.amber),
-                          activeColor: Colors.amber,
+                          activeThumbColor: Colors.amber,
                           value: themeProvider.isDarkMode,
                           onChanged: (bool value) {
                             themeProvider.toggleTheme();
