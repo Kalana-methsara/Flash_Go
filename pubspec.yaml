@@ -20,8 +20,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # 🗺️ Location & Maps
-  google_maps_flutter: ^2.6.0
-  geolocator: ^11.0.0
+  google_maps_flutter: ^2.9.0
+  geolocator: ^13.0.1
 
   firebase_auth: ^5.5.0
   cloud_firestore: ^5.4.4

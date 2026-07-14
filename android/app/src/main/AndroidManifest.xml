@@ -6,6 +6,11 @@
         android:label="flash_go"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyDRkBb1x-jmUMx0pkevQwg9MwYwDpN_ABU"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

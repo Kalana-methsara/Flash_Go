@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+
+/// Location picker එකෙන් return වෙන result object එක
+class PickedLocation {
+  final String name;
+  final double latitude;
+  final double longitude;
+
+  PickedLocation({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+  });
+}
+
+class LocationPickerScreen extends StatefulWidget {
+  final String title;
+  const LocationPickerScreen({super.key, this.title = 'ස්ථානය තෝරන්න'});
+
+  @override
+  State<LocationPickerScreen> createState() => _LocationPickerScreenState();
+}
+
+class _LocationPickerScreenState extends State<LocationPickerScreen> {
+  GoogleMapController? _mapController;
+
+  // 💡 Default camera position - ඔයාගේ campus එකේ approximate coordinates වලට
+  // මේක වෙනස් කරගන්න (දැනට Sri Lanka center අනුව ලස්සනට තියලා තියෙන්නේ)
+  LatLng _pickedLatLng = const LatLng(7.2906, 80.6337);
+
+  final TextEditingController _nameController = TextEditingController();
+  bool _loadingLocation = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _goToCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _goToCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() => _loadingLocation = false);
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        setState(() => _loadingLocation = false);
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
+      setState(() {
+        _pickedLatLng = LatLng(position.latitude, position.longitude);
+        _loadingLocation = false;
+      });
+      _mapController?.animateCamera(CameraUpdate.newLatLng(_pickedLatLng));
+    } catch (e) {
+      debugPrint('⚠️ Location fetch failed: $e');
+      if (mounted) setState(() => _loadingLocation = false);
+    }
+  }
+
+  void _confirmLocation() {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ස්ථානයට නමක් දෙන්න (e.g. Main Canteen)'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.pop(
+      context,
+      PickedLocation(
+        name: _nameController.text.trim(),
+        latitude: _pickedLatLng.latitude,
+        longitude: _pickedLatLng.longitude,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
+      body: _loadingLocation
+          ? const Center(child: CircularProgressIndicator(color: Colors.amber))
+          : Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition:
+                      CameraPosition(target: _pickedLatLng, zoom: 17),
+                  onMapCreated: (controller) => _mapController = controller,
+                  // 💡 Map center එක move වෙනකොට pin position එකත් update කරනවා
+                  onCameraMove: (position) => _pickedLatLng = position.target,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: false,
+                ),
+                // 💡 Fixed pin - map එක drag කරද්දි center එකේම නවතිලා ඉන්නවා
+                const IgnorePointer(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 40),
+                      child: Icon(Icons.location_pin,
+                          size: 48, color: Colors.redAccent),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              labelText: 'ස්ථානයේ නම',
+                              hintText: 'e.g. Main Canteen',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _confirmLocation,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: const Text('මේ ස්ථානය තෝරගන්න ✅',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+}

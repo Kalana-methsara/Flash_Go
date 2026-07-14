@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'chat_screen.dart'; 
+import 'chat_screen.dart';
+import 'order_map_screen.dart'; // 💡 අලුතින් එකතු කළා
 
 class OrderStatusScreen extends StatelessWidget {
   final String orderId;
@@ -15,13 +16,13 @@ class OrderStatusScreen extends StatelessWidget {
     try {
       await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
         'status': nextStatus,
-        });
+      });
     } catch (e) {
-           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-             }
-             }
-              }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,39 @@ class OrderStatusScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Order Tracking'),
         actions: [
-          
+          // 💡 Chat button එකට කලින් Map button එකක් එකතු කළා
+          StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || !snapshot.data!.exists) {
+                return const SizedBox();
+              }
+              var order = snapshot.data!.data() as Map<String, dynamic>;
+              var pickup = order['pickupLocation'] as Map<String, dynamic>?;
+              var drop = order['dropLocation'] as Map<String, dynamic>?;
+
+              if (pickup == null || drop == null) return const SizedBox();
+
+              return IconButton(
+                icon: const Icon(Icons.map_rounded, color: Colors.amber, size: 28),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderMapScreen(
+                        pickupName: pickup['name'] ?? 'Pickup',
+                        pickupLat: (pickup['latitude'] ?? 0.0).toDouble(),
+                        pickupLng: (pickup['longitude'] ?? 0.0).toDouble(),
+                        dropName: drop['name'] ?? 'Drop',
+                        dropLat: (drop['latitude'] ?? 0.0).toDouble(),
+                        dropLng: (drop['longitude'] ?? 0.0).toDouble(),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.chat_bubble_rounded, color: Colors.amber, size: 28),
             onPressed: () {
@@ -59,8 +92,9 @@ class OrderStatusScreen extends StatelessWidget {
           var order = snapshot.data!.data() as Map<String, dynamic>;
           String status = order['status'] ?? 'PENDING';
           String title = order['title'] ?? 'Errand';
-          String customerId = order['customerId'] ?? '';
           String runnerId = order['runnerId'] ?? '';
+          var pickup = order['pickupLocation'] as Map<String, dynamic>?;
+          var drop = order['dropLocation'] as Map<String, dynamic>?;
 
           bool isRunner = currentUserId == runnerId;
 
@@ -76,8 +110,65 @@ class OrderStatusScreen extends StatelessWidget {
               children: [
                 Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Status: $status', style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.bold)),
-                const SizedBox(height: 20),
+                Text('Status: $status',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+
+                // 💡 Route card එකක් - click කළොත් map එකට යනවා
+                if (pickup != null && drop != null)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderMapScreen(
+                            pickupName: pickup['name'] ?? 'Pickup',
+                            pickupLat: (pickup['latitude'] ?? 0.0).toDouble(),
+                            pickupLng: (pickup['longitude'] ?? 0.0).toDouble(),
+                            dropName: drop['name'] ?? 'Drop',
+                            dropLat: (drop['latitude'] ?? 0.0).toDouble(),
+                            dropLng: (drop['longitude'] ?? 0.0).toDouble(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on, color: Colors.redAccent, size: 18),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text('From: ${pickup['name']}',
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.navigation, color: Colors.green, size: 18),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text('To: ${drop['name']}',
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                                ),
+                                const Icon(Icons.map_rounded, color: Colors.amber, size: 20),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
 
                 Expanded(
                   child: Stepper(
@@ -96,14 +187,18 @@ class OrderStatusScreen extends StatelessWidget {
                         title: const Text('Accepted'),
                         subtitle: const Text('Runner කෙනෙක් ඇණවුම බාරගෙන ඇත.'),
                         isActive: currentStep >= 1,
-                        state: currentStep > 1 ? StepState.complete : (currentStep == 1 ? StepState.editing : StepState.indexed),
+                        state: currentStep > 1
+                            ? StepState.complete
+                            : (currentStep == 1 ? StepState.editing : StepState.indexed),
                         content: const SizedBox(),
                       ),
                       Step(
                         title: const Text('Picked Up'),
                         subtitle: const Text('Runner භාණ්ඩය රැගෙන එමින් පවතී.'),
                         isActive: currentStep >= 2,
-                        state: currentStep > 2 ? StepState.complete : (currentStep == 2 ? StepState.editing : StepState.indexed),
+                        state: currentStep > 2
+                            ? StepState.complete
+                            : (currentStep == 2 ? StepState.editing : StepState.indexed),
                         content: const SizedBox(),
                       ),
                       Step(
