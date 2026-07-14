@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'theme_provider.dart';
-import 'services/notification_service.dart'; // 💡 අලුතින් එකතු කළ import එක
+import 'services/notification_service.dart';
 import 'screens/login_page.dart';
 
 void main() async {
@@ -12,11 +12,8 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 💡 Background handler එක Firebase.initializeApp() එකට පස්සේම, 
-  // runApp() එකට කලින් register කරන්න ඕන (Flutter engine එකට separate isolate එකෙන් call වෙන්නේ)
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  // 💡 Notification service එක initialize කිරීම - permission/permission issues වලින් app crash නොවෙන්න
   try {
     await NotificationService.instance.initialize();
   } catch (e) {

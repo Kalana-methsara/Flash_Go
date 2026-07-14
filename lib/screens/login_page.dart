@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/notification_service.dart'; // 💡 එකතු කළා
+import '../services/notification_service.dart';
 import 'main_dashboard.dart';
 import 'register_page.dart';
 
@@ -26,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Firebase Login Logic
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -34,16 +33,13 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        // Firebase එකෙන් login වීම පරීක්ෂා කිරීම
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // 💡 login සාර්ථක වුනාට පස්සේ FCM token එක මේ user ගේ Firestore doc එකට save කරනවා
         await NotificationService.instance.saveTokenToFirestore();
 
-        // 💡 සාර්ථක නම් කෙලින්ම Bottom Navigation Bar එක තියෙන Main Dashboard එකට රැගෙන යාම
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -53,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'වැරදීමක් සිදුවුණා. නැවත උත්සාහ කරන්න.';
         
-        // 💡 Firebase Auth නවතම අප්ඩේට් එකට අනුව 'invalid-credential' කේතයද එකතු කළා
         if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
           errorMessage = 'ඇතුළත් කළ Email හෝ Password එක වැරදියි.';
         } else if (e.code == 'invalid-email') {
@@ -66,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           SnackBar(
             content: Text(errorMessage, style: const TextStyle(fontWeight: FontWeight.w500)), 
             backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating, // ලස්සනට පාවෙලා එන විදිහට හැදුවා
+            behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
@@ -92,11 +87,9 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // App Logo Icon
                 const Icon(Icons.flash_on, size: 80, color: Colors.amber),
                 const SizedBox(height: 10),
                 
-                // App Title
                 Text(
                   'Flash Go',
                   textAlign: TextAlign.center,
@@ -112,7 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Email Field
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -125,7 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Field
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscureText,
@@ -142,7 +133,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Login Button
                 _isLoading
                     ? const Center(child: CircularProgressIndicator(color: Colors.amber))
                     : SizedBox(
@@ -160,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                 const SizedBox(height: 16),
                 
-                // Go to Register Page Button
                 TextButton(
                   onPressed: () {
                     Navigator.push(

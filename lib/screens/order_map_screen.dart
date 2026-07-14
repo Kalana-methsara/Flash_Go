@@ -48,9 +48,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
       ),
     };
 
-    // 💡 Direct straight line එකක් pickup -> drop අතර.
-    // Actual road route එකක් ඕන නම් Google Directions API + flutter_polyline_points
-    // package එක ඕන වෙනවා (billing enable කරන්න ඕන Google Cloud Console එකේ).
     final polylines = <Polyline>{
       Polyline(
         polylineId: const PolylineId('route'),
@@ -90,7 +87,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
             polylines: polylines,
             onMapCreated: (controller) {
               _mapController = controller;
-              // 💡 map render වුනාට පස්සේ marker දෙකම screen එකේ fit වෙන විදිහට zoom කරනවා
               Future.delayed(const Duration(milliseconds: 300), () {
                 _mapController?.animateCamera(
                   CameraUpdate.newLatLngBounds(bounds, 80),

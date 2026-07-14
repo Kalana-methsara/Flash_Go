@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Location picker එකෙන් return වෙන result object එක
 class PickedLocation {
   final String name;
   final double latitude;
@@ -26,8 +25,6 @@ class LocationPickerScreen extends StatefulWidget {
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   GoogleMapController? _mapController;
 
-  // 💡 Default camera position - ඔයාගේ campus එකේ approximate coordinates වලට
-  // මේක වෙනස් කරගන්න (දැනට Sri Lanka center අනුව ලස්සනට තියලා තියෙන්නේ)
   LatLng _pickedLatLng = const LatLng(7.2906, 80.6337);
 
   final TextEditingController _nameController = TextEditingController();
@@ -108,13 +105,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   initialCameraPosition:
                       CameraPosition(target: _pickedLatLng, zoom: 17),
                   onMapCreated: (controller) => _mapController = controller,
-                  // 💡 Map center එක move වෙනකොට pin position එකත් update කරනවා
                   onCameraMove: (position) => _pickedLatLng = position.target,
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   zoomControlsEnabled: false,
                 ),
-                // 💡 Fixed pin - map එක drag කරද්දි center එකේම නවතිලා ඉන්නවා
                 const IgnorePointer(
                   child: Center(
                     child: Padding(

@@ -14,7 +14,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  // මැසේජ් එක Send කිරීමේ Method එක
   void _sendMessage() async {
     if (_messageController.text.trim().isEmpty) return;
 
@@ -42,7 +41,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // Real-time Messages Stream
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -59,7 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 var docs = snapshot.data!.docs;
 
                 return ListView.builder(
-                  reverse: true, // අලුත්ම මැසේජ් පල්ලෙහායින් පෙන්වීමට
+                  reverse: true,
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     var data = docs[index].data() as Map<String, dynamic>;
@@ -95,7 +93,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // Message Input Field
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Row(

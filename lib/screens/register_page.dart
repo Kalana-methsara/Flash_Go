@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../services/notification_service.dart'; // 💡 එකතු කළා
+import '../services/notification_service.dart';
 import 'main_dashboard.dart'; 
 
 class RegisterPage extends StatefulWidget {
@@ -60,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage> {
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        // 💡 register සාර්ථක වුනාට පස්සේ FCM token එක save කරනවා
         await NotificationService.instance.saveTokenToFirestore();
 
         

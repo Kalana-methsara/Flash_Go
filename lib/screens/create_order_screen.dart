@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'order_status_screen.dart';
-import 'location_picker_screen.dart'; // 💡 අලුතින් එකතු කළා
+import 'location_picker_screen.dart';
 
 class CreateOrderScreen extends StatefulWidget {
   const CreateOrderScreen({super.key});
@@ -140,7 +140,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     }
   }
 
-  // 💡 Pickup/Drop location picker එකට යන selector widget එක
   Widget _buildLocationSelector({
     required String label,
     required IconData icon,
@@ -234,7 +233,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 💡 Pickup location - map picker
               _buildLocationSelector(
                 label: 'බඩු ගන්න ඕන තැන (Pickup Location)',
                 icon: Icons.location_on,
@@ -244,7 +242,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 💡 Drop location - map picker
               _buildLocationSelector(
                 label: 'ගෙනත් දෙන්න ඕන තැන (Drop Location)',
                 icon: Icons.navigation,

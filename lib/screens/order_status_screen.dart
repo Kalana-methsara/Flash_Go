@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'chat_screen.dart';
-import 'order_map_screen.dart'; // 💡 අලුතින් එකතු කළා
+import 'order_map_screen.dart';
 
 class OrderStatusScreen extends StatelessWidget {
   final String orderId;
@@ -32,7 +32,6 @@ class OrderStatusScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Order Tracking'),
         actions: [
-          // 💡 Chat button එකට කලින් Map button එකක් එකතු කළා
           StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots(),
             builder: (context, snapshot) {
@@ -114,7 +113,6 @@ class OrderStatusScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
 
-                // 💡 Route card එකක් - click කළොත් map එකට යනවා
                 if (pickup != null && drop != null)
                   InkWell(
                     borderRadius: BorderRadius.circular(12),
