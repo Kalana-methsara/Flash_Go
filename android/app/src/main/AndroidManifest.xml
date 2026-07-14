@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:label="flash_go"
+        android:label="Flash Go"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
@@ -43,7 +43,7 @@
              channel id එකට match වෙන්න ඕන) -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="camprunner_high_importance_channel" />
+            android:value="flashgo_high_importance_channel" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/launcher_icon" />

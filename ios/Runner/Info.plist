@@ -28,9 +28,9 @@
 	<true/>
 
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Order pickup සහ drop location එක map එකේ තෝරගන්න CampRunner ට ඔයාගේ location එක ඕන වෙනවා.</string>
+	<string>Order pickup සහ drop location එක map එකේ තෝරගන්න Flash Go ට ඔයාගේ location එක ඕන වෙනවා.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Order pickup සහ drop location එක map එකේ තෝරගන්න CampRunner ට ඔයාගේ location එක ඕන වෙනවා.</string>
+	<string>Order pickup සහ drop location එක map එකේ තෝරගන්න Flash Go ට ඔයාගේ location එක ඕන වෙනවා.</string>
 
 	<key>UIBackgroundModes</key>
 	<array>

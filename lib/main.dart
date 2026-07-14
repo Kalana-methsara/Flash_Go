@@ -26,20 +26,20 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
-      child: const CampRunnerApp(),
+      child: const FlashGoApp(),
     ),
   );
 }
 
-class CampRunnerApp extends StatelessWidget {
-  const CampRunnerApp({super.key});
+class FlashGoApp extends StatelessWidget {
+  const FlashGoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
-      title: 'CampRunner',
+      title: 'Flash Go',
       debugShowCheckedModeBanner: false,
       
       themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,

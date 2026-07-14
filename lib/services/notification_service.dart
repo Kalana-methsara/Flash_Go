@@ -20,8 +20,8 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
-    'camprunner_high_importance_channel', 
-    'CampRunner Notifications', 
+    'flashgo_high_importance_channel', 
+    'Flash Go Notifications', 
     description: 'Order updates සහ chat messages සඳහා notifications',
     importance: Importance.high,
   );
