@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'order_status_screen.dart'; 
+import '../app_strings.dart';
+import 'order_status_screen.dart';
 
 class CampusPoolScreen extends StatelessWidget {
   const CampusPoolScreen({super.key});
 
-  
   Future<void> _acceptOrder(BuildContext context, String orderId) async {
     String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     if (currentUserId == null) return;
 
     try {
-      
       await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
         'runnerId': currentUserId,
         'status': 'ACCEPTED',
@@ -21,9 +20,9 @@ class CampusPoolScreen extends StatelessWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ඔයා ඕඩර් එක සාර්ථකව බාරගත්තා! 🚴‍♂️'), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.tr('order_accepted_success')), backgroundColor: Colors.green),
         );
-        
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => OrderStatusScreen(orderId: orderId)),
@@ -44,11 +43,10 @@ class CampusPoolScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campus Errand Pool', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('campus_pool_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        
         stream: FirebaseFirestore.instance
             .collection('orders')
             .where('status', isEqualTo: 'PENDING')
@@ -63,14 +61,14 @@ class CampusPoolScreen extends StatelessWidget {
           }
 
           final docs = snapshot.data?.docs ?? [];
-          
+
           final availableOrders = docs.where((doc) => doc['requesterId'] != currentUserId).toList();
 
           if (availableOrders.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'දැනට Pool එකේ කිසිම රික්වෙස්ට් එකක් නැහැ! 😴',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                context.tr('no_requests'),
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
               ),
             );
           }
@@ -80,7 +78,7 @@ class CampusPoolScreen extends StatelessWidget {
             itemCount: availableOrders.length,
             itemBuilder: (context, index) {
               final order = availableOrders[index];
-              
+
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -123,7 +121,7 @@ class CampusPoolScreen extends StatelessWidget {
                           const Icon(Icons.location_on, color: Colors.redAccent, size: 18),
                           const SizedBox(width: 4),
                           Expanded(
-                            child: Text('From: ${order['pickupLocation']['name']}',
+                            child: Text('${context.tr('from_label')}: ${order['pickupLocation']['name']}',
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                           ),
                         ],
@@ -134,7 +132,7 @@ class CampusPoolScreen extends StatelessWidget {
                           const Icon(Icons.navigation, color: Colors.green, size: 18),
                           const SizedBox(width: 4),
                           Expanded(
-                            child: Text('To: ${order['dropLocation']['name']}',
+                            child: Text('${context.tr('to_label')}: ${order['dropLocation']['name']}',
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                           ),
                         ],
@@ -150,7 +148,7 @@ class CampusPoolScreen extends StatelessWidget {
                             foregroundColor: Colors.amber,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
-                          child: const Text('Accept Errand 🚀', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text(context.tr('accept_errand'), style: const TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../app_strings.dart';
 
 class ChatScreen extends StatefulWidget {
   final String orderId;
@@ -35,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Chat 💬', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('live_chat_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.amber,
         foregroundColor: Colors.black,
       ),
@@ -101,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type a message...',
+                      hintText: context.tr('type_message'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,

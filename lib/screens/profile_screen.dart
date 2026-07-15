@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import '../services/notification_service.dart'; 
+import '../services/notification_service.dart';
+import '../app_strings.dart';
 import 'login_page.dart';
 import '../theme_provider.dart';
+import '../language_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -15,7 +17,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout(BuildContext context) async {
-    
     await NotificationService.instance.clearToken();
     await FirebaseAuth.instance.signOut();
     if (context.mounted) {
@@ -30,17 +31,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-    
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('my_profile_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
       ),
       body: currentUserId == null
-          ? const Center(child: Text('කරුණාකර ප්‍රථමයෙන් ලොග් වන්න.'))
+          ? Center(child: Text(context.tr('please_login_first_profile')))
           : FutureBuilder<DocumentSnapshot>(
               future: FirebaseFirestore.instance.collection('users').doc(currentUserId).get(),
               builder: (context, snapshot) {
@@ -52,13 +53,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
 
                 if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return const Center(child: Text('යූසර්ගේ විස්තර සොයාගත නොහැකි විය.'));
+                  return Center(child: Text(context.tr('user_not_found')));
                 }
 
                 final userData = snapshot.data!;
-                final String name = userData['name'] ?? 'නමක් නොමැත';
-                final String email = userData['email'] ?? 'ඊමේල් නොමැත';
-                final String phone = userData['phone'] ?? 'ෆෝන් අංකයක් නොමැත';
+                final String name = userData['name'] ?? context.tr('no_name');
+                final String email = userData['email'] ?? context.tr('no_email');
+                final String phone = userData['phone'] ?? context.tr('no_phone');
 
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(20.0),
@@ -75,13 +76,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         name,
                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                      const Text(
-                        'Flash Go Student Member',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      Text(
+                        context.tr('member_tag'),
+                        style: const TextStyle(color: Colors.grey, fontSize: 13),
                       ),
                       const SizedBox(height: 30),
 
-                      
                       Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -89,13 +89,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.email_outlined, color: Colors.amber),
-                              title: const Text('Campus Email', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                              title: Text(context.tr('campus_email'),
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
                               subtitle: Text(email, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                             ),
                             const Divider(height: 1),
                             ListTile(
                               leading: const Icon(Icons.phone_android_outlined, color: Colors.amber),
-                              title: const Text('Contact Number', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                              title: Text(context.tr('contact_number'),
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
                               subtitle: Text(phone, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                             ),
                           ],
@@ -103,12 +105,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      
                       Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         child: SwitchListTile(
-                          title: const Text('Dark Theme Mode', style: TextStyle(fontWeight: FontWeight.w500)),
+                          title: Text(context.tr('dark_theme'), style: const TextStyle(fontWeight: FontWeight.w500)),
                           secondary: const Icon(Icons.dark_mode_outlined, color: Colors.amber),
                           activeThumbColor: Colors.amber,
                           value: themeProvider.isDarkMode,
@@ -117,9 +118,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                         ),
                       ),
+                      const SizedBox(height: 16),
+
+                      // 💡 Language switcher card - English (default) / Sinhala
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.language_rounded, color: Colors.amber),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(context.tr('language'),
+                                    style: const TextStyle(fontWeight: FontWeight.w500)),
+                              ),
+                              SegmentedButton<AppLanguage>(
+                                segments: const [
+                                  ButtonSegment(value: AppLanguage.en, label: Text('EN')),
+                                  ButtonSegment(value: AppLanguage.si, label: Text('සිං')),
+                                ],
+                                selected: {languageProvider.language},
+                                onSelectionChanged: (selection) {
+                                  languageProvider.setLanguage(selection.first);
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                                    if (states.contains(WidgetState.selected)) {
+                                      return Colors.amber;
+                                    }
+                                    return null;
+                                  }),
+                                  foregroundColor: WidgetStateProperty.resolveWith((states) {
+                                    if (states.contains(WidgetState.selected)) {
+                                      return Colors.black;
+                                    }
+                                    return null;
+                                  }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 40),
 
-                      
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -130,12 +174,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             foregroundColor: Colors.redAccent,
                           ),
                           onPressed: () => _logout(context),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.logout_rounded),
-                              SizedBox(width: 8),
-                              Text('Logout from Account', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const Icon(Icons.logout_rounded),
+                              const SizedBox(width: 8),
+                              Text(context.tr('logout'), style: const TextStyle(fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),

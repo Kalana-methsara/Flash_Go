@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../app_strings.dart';
 import 'order_status_screen.dart';
 
 class ActiveOrdersScreen extends StatelessWidget {
@@ -11,19 +12,18 @@ class ActiveOrdersScreen extends StatelessWidget {
     String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     if (currentUserId == null) {
-      return const Center(child: Text('කරුණාකර ප්‍රථමයෙන් ලොග් වන්න.'));
+      return Center(child: Text(context.tr('please_login_first')));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Active Orders', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('active_orders_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        
         stream: FirebaseFirestore.instance
             .collection('orders')
-            .where('status', whereIn: ['PENDING', 'ACCEPTED', 'PICKED_UP']) 
+            .where('status', whereIn: ['PENDING', 'ACCEPTED', 'PICKED_UP'])
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
@@ -32,16 +32,15 @@ class ActiveOrdersScreen extends StatelessWidget {
           }
 
           final docs = snapshot.data?.docs ?? [];
-          
-          
+
           final myOrders = docs.where((doc) {
             final data = doc.data() as Map<String, dynamic>;
             return data['requesterId'] == currentUserId || data['runnerId'] == currentUserId;
           }).toList();
 
           if (myOrders.isEmpty) {
-            return const Center(
-              child: Text('දැනට සක්‍රීය ඇණවුම් කිසිවක් නැත! 🏃‍♂️'),
+            return Center(
+              child: Text(context.tr('no_active_orders')),
             );
           }
 
@@ -57,7 +56,8 @@ class ActiveOrdersScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
                   title: Text(order['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('Status: ${order['status']} (${isRunner ? "Runner" : "Customer"})'),
+                  subtitle: Text(
+                      '${context.tr('status_label')}: ${order['status']} (${isRunner ? context.tr('runner_label') : context.tr('customer_label')})'),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.amber, size: 18),
                   onTap: () {
                     Navigator.push(

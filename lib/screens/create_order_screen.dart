@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../app_strings.dart';
 import 'order_status_screen.dart';
 import 'location_picker_screen.dart';
 
@@ -35,8 +36,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final result = await Navigator.push<PickedLocation>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            const LocationPickerScreen(title: 'Pickup ස්ථානය තෝරන්න'),
+        builder: (context) => LocationPickerScreen(title: context.tr('pick_pickup_title')),
       ),
     );
     if (result != null) {
@@ -48,8 +48,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final result = await Navigator.push<PickedLocation>(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            const LocationPickerScreen(title: 'Drop ස්ථානය තෝරන්න'),
+        builder: (context) => LocationPickerScreen(title: context.tr('pick_drop_title')),
       ),
     );
     if (result != null) {
@@ -62,8 +61,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
     if (_pickupLocation == null || _dropLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('කරුණාකර Pickup සහ Drop location දෙකම map එකෙන් තෝරන්න'),
+        SnackBar(
+          content: Text(context.tr('select_locations_error')),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -76,11 +75,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       String? currentUserUid = FirebaseAuth.instance.currentUser?.uid;
 
       if (currentUserUid == null) {
-        throw Exception("කරුණාකර ප්‍රථමයෙන් ලොග් වන්න.");
+        throw Exception(context.tr('please_login_first'));
       }
 
-      DocumentReference orderRef =
-          FirebaseFirestore.instance.collection('orders').doc();
+      DocumentReference orderRef = FirebaseFirestore.instance.collection('orders').doc();
 
       await orderRef.set({
         'orderId': orderRef.id,
@@ -113,8 +111,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Order එක Campus Pool එකට සාර්ථකව එකතු වුණා! 🚀'),
+          SnackBar(
+            content: Text(context.tr('order_posted_success')),
             backgroundColor: Colors.green,
           ),
         );
@@ -158,7 +156,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(
-          picked?.name ?? 'Map එකෙන් තෝරන්න',
+          picked?.name ?? context.tr('pick_on_map'),
           style: TextStyle(
             color: picked == null ? Colors.grey : Colors.black87,
             fontWeight: picked == null ? FontWeight.normal : FontWeight.w500,
@@ -172,8 +170,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Request (Errand)',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('new_request_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -186,18 +183,17 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Card(
                 color: Colors.amber.withValues(alpha: 0.15),
                 elevation: 0,
-                shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      Icon(Icons.flash_on, color: Colors.amber, size: 30),
-                      SizedBox(width: 12),
+                      const Icon(Icons.flash_on, color: Colors.amber, size: 30),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'ඔයාට කරගන්න ඕන errand එක ඇතුළත් කරන්න. කැම්පස් එකේ ළඟ ඉන්න යාළුවෙක් ඒක කරලා දේවි!',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                          context.tr('create_order_banner'),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
@@ -209,13 +205,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'මොකක්ද වෙන්න ඕනේ? (Title)',
-                  hintText: 'e.g., කැන්ටින් එකෙන් චිකන් රයිස් එකක්',
+                  labelText: context.tr('title_label'),
+                  hintText: context.tr('title_hint'),
                   prefixIcon: const Icon(Icons.assignment),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                validator: (value) =>
-                    value!.isEmpty ? 'කරුණාකර මේ කොටස පුරවන්න' : null,
+                validator: (value) => value!.isEmpty ? context.tr('enter_title') : null,
               ),
               const SizedBox(height: 16),
 
@@ -223,18 +218,17 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 controller: _descController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'විස්තරය (Description)',
-                  hintText: 'කෑම එක අරන් IT Lab 2 එකට ගෙනත් දෙන්න. සල්ලි cash දෙන්නම්.',
+                  labelText: context.tr('desc_label'),
+                  hintText: context.tr('desc_hint'),
                   prefixIcon: const Icon(Icons.description),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                validator: (value) =>
-                    value!.isEmpty ? 'විස්තරයක් ඇතුළත් කරන්න' : null,
+                validator: (value) => value!.isEmpty ? context.tr('enter_desc') : null,
               ),
               const SizedBox(height: 16),
 
               _buildLocationSelector(
-                label: 'බඩු ගන්න ඕන තැන (Pickup Location)',
+                label: context.tr('pickup_label'),
                 icon: Icons.location_on,
                 iconColor: Colors.redAccent,
                 picked: _pickupLocation,
@@ -243,7 +237,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               const SizedBox(height: 16),
 
               _buildLocationSelector(
-                label: 'ගෙනත් දෙන්න ඕන තැන (Drop Location)',
+                label: context.tr('drop_label'),
                 icon: Icons.navigation,
                 iconColor: Colors.green,
                 picked: _dropLocation,
@@ -255,14 +249,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 controller: _tipController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Runner ට දෙන ගාස්තුව (Tip Amount - LKR)',
-                  hintText: 'e.g., 150',
+                  labelText: context.tr('tip_label'),
+                  hintText: context.tr('tip_hint'),
                   prefixIcon: const Icon(Icons.monetization_on, color: Colors.amber),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 validator: (value) {
-                  if (value!.isEmpty) return 'ගාස්තුවක් ඇතුළත් කරන්න';
-                  if (double.tryParse(value) == null) return 'වලංගු මුදලක් ඇතුළත් කරන්න';
+                  if (value!.isEmpty) return context.tr('enter_tip');
+                  if (double.tryParse(value) == null) return context.tr('valid_amount');
                   return null;
                 },
               ),
@@ -281,14 +275,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           elevation: 2,
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.send_rounded, fontWeight: FontWeight.bold),
-                            SizedBox(width: 8),
+                            const Icon(Icons.send_rounded, fontWeight: FontWeight.bold),
+                            const SizedBox(width: 8),
                             Text(
-                              'Post to Campus Pool',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              context.tr('post_to_pool'),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/notification_service.dart';
+import '../app_strings.dart';
 import 'main_dashboard.dart';
 import 'register_page.dart';
 
@@ -15,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscureText = true;
 
@@ -47,24 +48,26 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } on FirebaseAuthException catch (e) {
-        String errorMessage = 'වැරදීමක් සිදුවුණා. නැවත උත්සාහ කරන්න.';
-        
+        String errorMessage = context.tr('login_error_generic');
+
         if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
-          errorMessage = 'ඇතුළත් කළ Email හෝ Password එක වැරදියි.';
+          errorMessage = context.tr('login_error_credentials');
         } else if (e.code == 'invalid-email') {
-          errorMessage = 'ඇතුළත් කළ Email රටාව වැරදියි.';
+          errorMessage = context.tr('login_error_invalid_email');
         } else if (e.code == 'user-disabled') {
-          errorMessage = 'මෙම ගිණුම තාවකාලිකව අත්හිටුවා ඇත.';
+          errorMessage = context.tr('login_error_disabled');
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage, style: const TextStyle(fontWeight: FontWeight.w500)), 
-            backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage, style: const TextStyle(fontWeight: FontWeight.w500)),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
       } finally {
         if (mounted) {
           setState(() {
@@ -89,19 +92,19 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const Icon(Icons.flash_on, size: 80, color: Colors.amber),
                 const SizedBox(height: 10),
-                
+
                 Text(
-                  'Flash Go',
+                  context.tr('app_name'),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
                       ),
                 ),
-                const Text(
-                  'Fastest Campus Errand Network',
+                Text(
+                  context.tr('app_tagline'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 const SizedBox(height: 40),
 
@@ -109,11 +112,11 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Campus Email',
+                    labelText: context.tr('campus_email'),
                     prefixIcon: const Icon(Icons.email_outlined),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  validator: (value) => value!.isEmpty ? 'Email එක ඇතුළත් කරන්න' : null,
+                  validator: (value) => value!.isEmpty ? context.tr('enter_email') : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -121,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: _obscureText,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: context.tr('password'),
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
@@ -129,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  validator: (value) => value!.isEmpty ? 'Password එක ඇතුළත් කරන්න' : null,
+                  validator: (value) => value!.isEmpty ? context.tr('enter_password') : null,
                 ),
                 const SizedBox(height: 24),
 
@@ -145,11 +148,12 @@ class _LoginPageState extends State<LoginPage> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             elevation: 2,
                           ),
-                          child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          child: Text(context.tr('login'),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
                 const SizedBox(height: 16),
-                
+
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -157,9 +161,9 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute(builder: (context) => const RegisterPage()),
                     );
                   },
-                  child: const Text(
-                    "ගිණුමක් නැද්ද? Register වෙන්න මෙතනින්",
-                    style: TextStyle(color: Colors.amber, fontWeight: FontWeight.w600),
+                  child: Text(
+                    context.tr('no_account'),
+                    style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],

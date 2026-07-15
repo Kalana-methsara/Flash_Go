@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import '../app_strings.dart';
 
 class PickedLocation {
   final String name;
@@ -15,8 +16,8 @@ class PickedLocation {
 }
 
 class LocationPickerScreen extends StatefulWidget {
-  final String title;
-  const LocationPickerScreen({super.key, this.title = 'ස්ථානය තෝරන්න'});
+  final String? title;
+  const LocationPickerScreen({super.key, this.title});
 
   @override
   State<LocationPickerScreen> createState() => _LocationPickerScreenState();
@@ -76,9 +77,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   void _confirmLocation() {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ස්ථානයට නමක් දෙන්න (e.g. Main Canteen)'),
-        ),
+        SnackBar(content: Text(context.tr('enter_location_name_error'))),
       );
       return;
     }
@@ -96,14 +95,13 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(title: Text(widget.title ?? context.tr('pick_location_title'))),
       body: _loadingLocation
           ? const Center(child: CircularProgressIndicator(color: Colors.amber))
           : Stack(
               children: [
                 GoogleMap(
-                  initialCameraPosition:
-                      CameraPosition(target: _pickedLatLng, zoom: 17),
+                  initialCameraPosition: CameraPosition(target: _pickedLatLng, zoom: 17),
                   onMapCreated: (controller) => _mapController = controller,
                   onCameraMove: (position) => _pickedLatLng = position.target,
                   myLocationEnabled: true,
@@ -114,8 +112,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   child: Center(
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 40),
-                      child: Icon(Icons.location_pin,
-                          size: 48, color: Colors.redAccent),
+                      child: Icon(Icons.location_pin, size: 48, color: Colors.redAccent),
                     ),
                   ),
                 ),
@@ -125,8 +122,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   bottom: 16,
                   child: Card(
                     elevation: 4,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
@@ -135,10 +131,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                           TextField(
                             controller: _nameController,
                             decoration: InputDecoration(
-                              labelText: 'ස්ථානයේ නම',
-                              hintText: 'e.g. Main Canteen',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                              labelText: context.tr('location_name_label'),
+                              hintText: context.tr('location_name_hint'),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -149,12 +144,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.amber,
                                 foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                              child: const Text('මේ ස්ථානය තෝරගන්න ✅',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                              child: Text(context.tr('confirm_location'),
+                                  style: const TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ),
                         ],

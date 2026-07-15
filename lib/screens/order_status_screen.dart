@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../app_strings.dart';
 import 'chat_screen.dart';
 import 'order_map_screen.dart';
 
@@ -30,7 +31,7 @@ class OrderStatusScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Tracking'),
+        title: Text(context.tr('order_tracking_title')),
         actions: [
           StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots(),
@@ -51,10 +52,10 @@ class OrderStatusScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => OrderMapScreen(
-                        pickupName: pickup['name'] ?? 'Pickup',
+                        pickupName: pickup['name'] ?? context.tr('pickup_word'),
                         pickupLat: (pickup['latitude'] ?? 0.0).toDouble(),
                         pickupLng: (pickup['longitude'] ?? 0.0).toDouble(),
-                        dropName: drop['name'] ?? 'Drop',
+                        dropName: drop['name'] ?? context.tr('drop_word'),
                         dropLat: (drop['latitude'] ?? 0.0).toDouble(),
                         dropLng: (drop['longitude'] ?? 0.0).toDouble(),
                       ),
@@ -109,7 +110,7 @@ class OrderStatusScreen extends StatelessWidget {
               children: [
                 Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Status: $status',
+                Text('${context.tr('status_label')}: $status',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
 
@@ -121,10 +122,10 @@ class OrderStatusScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => OrderMapScreen(
-                            pickupName: pickup['name'] ?? 'Pickup',
+                            pickupName: pickup['name'] ?? context.tr('pickup_word'),
                             pickupLat: (pickup['latitude'] ?? 0.0).toDouble(),
                             pickupLng: (pickup['longitude'] ?? 0.0).toDouble(),
-                            dropName: drop['name'] ?? 'Drop',
+                            dropName: drop['name'] ?? context.tr('drop_word'),
                             dropLat: (drop['latitude'] ?? 0.0).toDouble(),
                             dropLng: (drop['longitude'] ?? 0.0).toDouble(),
                           ),
@@ -144,7 +145,7 @@ class OrderStatusScreen extends StatelessWidget {
                                 const Icon(Icons.location_on, color: Colors.redAccent, size: 18),
                                 const SizedBox(width: 6),
                                 Expanded(
-                                  child: Text('From: ${pickup['name']}',
+                                  child: Text('${context.tr('from_label')}: ${pickup['name']}',
                                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                                 ),
                               ],
@@ -155,7 +156,7 @@ class OrderStatusScreen extends StatelessWidget {
                                 const Icon(Icons.navigation, color: Colors.green, size: 18),
                                 const SizedBox(width: 6),
                                 Expanded(
-                                  child: Text('To: ${drop['name']}',
+                                  child: Text('${context.tr('to_label')}: ${drop['name']}',
                                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                                 ),
                                 const Icon(Icons.map_rounded, color: Colors.amber, size: 20),
@@ -175,15 +176,15 @@ class OrderStatusScreen extends StatelessWidget {
                     controlsBuilder: (context, details) => const SizedBox(),
                     steps: [
                       Step(
-                        title: const Text('Order Placed'),
-                        subtitle: const Text('ඇණවුම සාර්ථකව පෝස්ට් කර ඇත.'),
+                        title: Text(context.tr('step_placed_title')),
+                        subtitle: Text(context.tr('step_placed_sub')),
                         isActive: currentStep >= 0,
                         state: currentStep > 0 ? StepState.complete : StepState.editing,
                         content: const SizedBox(),
                       ),
                       Step(
-                        title: const Text('Accepted'),
-                        subtitle: const Text('Runner කෙනෙක් ඇණවුම බාරගෙන ඇත.'),
+                        title: Text(context.tr('step_accepted_title')),
+                        subtitle: Text(context.tr('step_accepted_sub')),
                         isActive: currentStep >= 1,
                         state: currentStep > 1
                             ? StepState.complete
@@ -191,8 +192,8 @@ class OrderStatusScreen extends StatelessWidget {
                         content: const SizedBox(),
                       ),
                       Step(
-                        title: const Text('Picked Up'),
-                        subtitle: const Text('Runner භාණ්ඩය රැගෙන එමින් පවතී.'),
+                        title: Text(context.tr('step_pickedup_title')),
+                        subtitle: Text(context.tr('step_pickedup_sub')),
                         isActive: currentStep >= 2,
                         state: currentStep > 2
                             ? StepState.complete
@@ -200,8 +201,8 @@ class OrderStatusScreen extends StatelessWidget {
                         content: const SizedBox(),
                       ),
                       Step(
-                        title: const Text('Delivered'),
-                        subtitle: const Text('ඇණවුම ඔබට ලැබී ඇත. ස්තූතියි! 🎉'),
+                        title: Text(context.tr('step_delivered_title')),
+                        subtitle: Text(context.tr('step_delivered_sub')),
                         isActive: currentStep >= 3,
                         state: currentStep == 3 ? StepState.complete : StepState.indexed,
                         content: const SizedBox(),
@@ -222,7 +223,7 @@ class OrderStatusScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: Text(
-                        status == 'ACCEPTED' ? 'I Picked Up the Item 🛍️' : 'Mark as Delivered ✅',
+                        status == 'ACCEPTED' ? context.tr('picked_up_button') : context.tr('delivered_button'),
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                     ),

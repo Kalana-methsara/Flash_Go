@@ -3,8 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../app_strings.dart';
 
-const String kGoogleDirectionsApiKey = 'AIzaSyDRkBb1x-jmUMx0pkevQwg9MwYwDpN_ABU'; 
+const String kGoogleDirectionsApiKey = 'AIzaSyDRkBb1x-jmUMx0pkevQwg9MwYwDpN_ABU';
 
 class OrderMapScreen extends StatefulWidget {
   final String pickupName;
@@ -80,7 +81,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
       _fallbackToStraightLine();
     }
 
-    
     Future.delayed(const Duration(milliseconds: 300), _fitBounds);
   }
 
@@ -93,7 +93,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
     });
   }
 
-  
   List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> points = [];
     int index = 0, len = encoded.length;
@@ -156,13 +155,13 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
       Marker(
         markerId: const MarkerId('pickup'),
         position: _pickup,
-        infoWindow: InfoWindow(title: 'Pickup', snippet: widget.pickupName),
+        infoWindow: InfoWindow(title: context.tr('pickup_word'), snippet: widget.pickupName),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ),
       Marker(
         markerId: const MarkerId('drop'),
         position: _drop,
-        infoWindow: InfoWindow(title: 'Drop', snippet: widget.dropName),
+        infoWindow: InfoWindow(title: context.tr('drop_word'), snippet: widget.dropName),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       ),
     };
@@ -195,7 +194,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
             },
           ),
 
-          
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 16,
@@ -214,7 +212,6 @@ class _OrderMapScreenState extends State<OrderMapScreen> {
             ),
           ),
 
-          
           Positioned(
             left: 0,
             right: 0,
@@ -277,8 +274,7 @@ class _RouteInfoSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-          20, 18, 20, MediaQuery.of(context).padding.bottom + 20),
+      padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(context).padding.bottom + 20),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -290,7 +286,6 @@ class _RouteInfoSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           Center(
             child: Container(
               width: 40,
@@ -302,19 +297,17 @@ class _RouteInfoSheet extends StatelessWidget {
               ),
             ),
           ),
-
-          
           if (loading)
-            const Row(
+            Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.amber),
                 ),
-                SizedBox(width: 10),
-                Text('Route calculate කරමින්...',
-                    style: TextStyle(fontSize: 13, color: Colors.grey)),
+                const SizedBox(width: 10),
+                Text(context.tr('calculating_route'),
+                    style: const TextStyle(fontSize: 13, color: Colors.grey)),
               ],
             )
           else
@@ -331,10 +324,10 @@ class _RouteInfoSheet extends StatelessWidget {
                 ),
                 if (usingFallback) ...[
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Approx. straight-line',
-                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                      context.tr('approx_straight_line'),
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
                       textAlign: TextAlign.right,
                     ),
                   ),
@@ -348,7 +341,7 @@ class _RouteInfoSheet extends StatelessWidget {
             icon: Icons.circle,
             iconColor: Colors.redAccent,
             iconSize: 10,
-            label: 'Pickup',
+            label: context.tr('pickup_word'),
             value: pickupName,
           ),
           Padding(
@@ -363,7 +356,7 @@ class _RouteInfoSheet extends StatelessWidget {
             icon: Icons.location_on,
             iconColor: Colors.green,
             iconSize: 18,
-            label: 'Drop',
+            label: context.tr('drop_word'),
             value: dropName,
           ),
         ],
@@ -390,8 +383,7 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: Colors.black87),
           const SizedBox(width: 6),
-          Text(label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -427,11 +419,8 @@ class _LocationRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600)),
+              Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             ],
           ),
         ),

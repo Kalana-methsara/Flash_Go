@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'theme_provider.dart';
+import 'language_provider.dart'; // 💡 අලුතින් එකතු කළා
 import 'services/notification_service.dart';
 import 'screens/login_page.dart';
 
@@ -21,8 +22,11 @@ void main() async {
   }
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => LanguageProvider()), // 💡 default: English
+      ],
       child: const FlashGoApp(),
     ),
   );
@@ -38,12 +42,11 @@ class FlashGoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flash Go',
       debugShowCheckedModeBanner: false,
-      
       themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber, 
+          seedColor: Colors.amber,
           brightness: Brightness.dark,
         ),
       ),
@@ -54,7 +57,6 @@ class FlashGoApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
       ),
-      
       home: const LoginPage(),
     );
   }
